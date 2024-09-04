@@ -1,0 +1,25 @@
+package automationFramework;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+public class FatimaTest {
+    private WebDriver driver;
+    
+    @Test
+    public void setUp() {
+        // Set up the WebDriver (ensure the path to your ChromeDriver is correct)
+        System.setProperty("webdriver.chrome.driver", "C:\\Users\\ProBook\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe");
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        driver.get("https://www.ballarddesigns.com/");
+    }
+
+    }
+

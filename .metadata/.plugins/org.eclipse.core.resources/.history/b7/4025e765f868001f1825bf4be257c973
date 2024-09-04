@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="FatimaTest">
+    <test name="FatimaTest">
+        <classes>
+            <class name="automationFramework.FatimaTest"/>
+        </classes>
+    </test>
+</suite>

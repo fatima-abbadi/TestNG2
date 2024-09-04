@@ -1,0 +1,91 @@
+package automationFramework;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+public class Test2 {
+
+    WebDriver driver;
+
+    @BeforeClass
+    public void setUp() {
+        // Set the path to your ChromeDriver
+        System.setProperty("webdriver.chrome.driver", "C:\\Users\\ProBook\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe");
+        driver = new ChromeDriver();
+        driver.get("https://www.frontgate.com/ShoppingCartView");
+    }
+
+    @Test(dataProvider = "loginData")
+    public void testLogin(String username, String password, String expectedMessage) {
+        // Find the username and password fields and the login button
+        WebElement emailField = driver.findElement(By.id("gwt-sign-in-modal"));
+        WebElement passwordField = driver.findElement(By.id("passwordReset")); 
+        WebElement loginButton = driver.findElement(By.id("logonButton")); 
+
+        // Enter the username and password
+        emailField.clear();
+        emailField.sendKeys(username);
+        passwordField.clear();
+        passwordField.sendKeys(password);
+
+        // Click the login button
+        loginButton.click();
+
+        // Wait and capture the message (this might need an explicit wait)
+        WebElement messageElement = driver.findElement(By.id("messageElementID")); // Replace with actual ID
+        String actualMessage = messageElement.getText();
+
+        // Assert the expected and actual messages
+        Assert.assertEquals(actualMessage, expectedMessage, "Verification Failed: ");
+    }
+
+    @DataProvider(name = "loginData")
+    public Object[][] loginDataProvider() throws IOException {
+        // Path to the Excel file
+        String filePath = System.getProperty("user.dir") + "C:\\Users\\ProBook\\eclipse-workspace\\Homework2\\src\\automationFramework\\data.xlsx";
+        FileInputStream file = new FileInputStream(new File(filePath));
+
+        Workbook workbook = new XSSFWorkbook(file);
+        Sheet sheet = workbook.getSheet("data"); // Replace with your actual sheet name
+
+        int rowCount = sheet.getLastRowNum();
+        Object[][] data = new Object[rowCount][3];
+
+        for (int i = 1; i <= rowCount; i++) {
+            Row row = sheet.getRow(i);
+            data[i - 1][0] = row.getCell(0).getStringCellValue(); // Username
+            data[i - 1][1] = row.getCell(1).getStringCellValue(); // Password
+
+            // Define the expected message for each row
+            if (i == 1) {
+                data[i - 1][2] = "Invalid email format, password empty.";
+            } else if (i == 2) {
+                data[i - 1][2] = "Login failed: Wrong password.";
+            } else if (i == 3) {
+                data[i - 1][2] = "Login successful.";
+            }
+        }
+        workbook.close();
+        return data;
+    }
+
+    @AfterClass
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+}

@@ -1,0 +1,29 @@
+package Fatima;
+
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.AfterMethod;
+
+public class FatimaTest {
+  @Test
+  public void f() {
+		 System.out.print("hani");
+
+  }
+  @Test
+  public void f2() {
+		 System.out.print("han2i");
+
+}
+  @BeforeMethod
+  public void beforeMethod() {
+	 System.out.print("fatima");
+  }
+
+  @AfterMethod
+  public void afterMethod() {
+		 System.out.print("abbadi");
+
+  }
+
+}

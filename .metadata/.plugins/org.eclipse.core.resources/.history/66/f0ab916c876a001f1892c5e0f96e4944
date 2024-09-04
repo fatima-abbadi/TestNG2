@@ -1,0 +1,76 @@
+package automationFramework;
+
+import automationFramework.Test2;
+
+import java.io.IOException;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+public class Test0 {
+    WebDriver driver;
+    Test2 excelUtils;
+    String filePath = "src/automationFramework/data.xlsx";
+
+    @BeforeClass
+    public void setup() throws IOException {
+        // Set up WebDriver
+        System.setProperty("webdriver.chrome.driver", "C:\\Users\\ProBook\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe");
+        driver = new ChromeDriver();
+        driver.get("https://www.frontgate.com/ShoppingCartView");
+
+        // Initialize Excel Utility
+        excelUtils = new Test2(filePath, "data");
+    }
+
+    @DataProvider(name = "data")
+    public Object[][] loginDataProvider() {
+        int rowCount = excelUtils.getRowCount();
+        Object[][] data = new Object[rowCount + 1][2];
+
+        for (int i = 0; i <= rowCount; i++) {
+            data[i][0] = excelUtils.getCellData(i, 0); 
+            data[i][1] = excelUtils.getCellData(i, 1);
+        }
+
+        return data;
+    }
+
+    @Test(dataProvider = "data")
+    public void testLogin(String username, String password) {
+        // Find username0 and password fields
+        WebElement emailField = driver.findElement(By.id("gwt-sign-in-modal")); 
+        WebElement passwordField = driver.findElement(By.id("passwordReset")); 
+        WebElement loginButton = driver.findElement(By.id("logonButton"));
+
+        // Enter credentials and submit
+        emailField.clear();
+        passwordField.clear();
+        emailField.sendKeys(username);
+        passwordField.sendKeys(password);
+        loginButton.click();
+
+        // Verification
+        try {
+            WebElement errorMsg = driver.findElement(By.id("errorMsg")); // Replace with actual error message locator
+            Assert.assertTrue(errorMsg.isDisplayed(), "Error message not displayed for: " + username);
+        } catch (Exception e) {
+            WebElement successMsg = driver.findElement(By.id("successMsg")); // Replace with actual success message locator
+            Assert.assertTrue(successMsg.isDisplayed(), "Success message not displayed for: " + username);
+        }
+    }
+
+    @AfterClass
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+}
